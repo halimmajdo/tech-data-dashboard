@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AssetHub // Digital Marketplace</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="logo">Asset<span>Hub</span></div>
+        <div class="cart-icon" id="cart-toggle">
+            Cart (<span id="cart-count">0</span>)
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Premium Digital Assets for Developers</h1>
+            <p>Boilerplates, UI kits, and scripts to speed up your workflow.</p>
+        </section>
+
+        <section class="products-grid">
+            <div class="product-card" data-id="1" data-name="Sleek Portfolio Template" data-price="19">
+                <div class="product-thumb">&lt;/&gt;</div>
+                <h3>Sleek Portfolio Template</h3>
+                <p>Clean HTML/CSS dark mode developer portfolio layout.</p>
+                <div class="product-footer">
+                    <span class="price">$19</span>
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="product-card" data-id="2" data-name="Vanilla JS Component Pack" data-price="29">
+                <div class="product-thumb">{}</div>
+                <h3>Vanilla JS Component Pack</h3>
+                <p>20+ responsive UI components built with pure JavaScript.</p>
+                <div class="product-footer">
+                    <span class="price">$29</span>
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="product-card" data-id="3" data-name="Neo-Brutalism Icon Set" data-price="12">
+                <div class="product-thumb">■ ▲ ●</div>
+                <h3>Neo-Brutalism Icon Set</h3>
+                <p>High-resolution SVG vectors optimized for web applications.</p>
+                <div class="product-footer">
+                    <span class="price">$12</span>
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="cart-drawer" id="cart-drawer">
+        <div class="cart-header">
+            <h3>Your Cart</h3>
+            <span class="close-cart" id="cart-close">&times;</span>
+        </div>
+        <div class="cart-items" id="cart-items">
+            <p class="empty-msg">Your cart is empty.</p>
+        </div>
+        <div class="cart-footer">
+            <div class="total-row">
+                <span>Total:</span>
+                <span id="cart-total">$0</span>
+            </div>
+            <button class="checkout-btn" id="checkout-btn">Proceed to Checkout</button>
+        </div>
+    </div>
+    <div class="cart-overlay" id="cart-overlay"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
