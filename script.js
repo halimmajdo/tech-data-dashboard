@@ -1,91 +1,62 @@
-let cart = [];
+document.addEventListener('DOMContentLoaded', () => {
+    const dataGrid = document.getElementById('data-grid');
+    const refreshBtn = document.getElementById('refresh-btn');
+    const loader = document.getElementById('loading-indicator');
+    const errorBox = document.getElementById('error-message');
 
-const cartToggle = document.getElementById('cart-toggle');
-const cartClose = document.getElementById('cart-close');
-const cartDrawer = document.getElementById('cart-drawer');
-const cartOverlay = document.getElementById('cart-overlay');
-const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
-const cartItemsContainer = document.getElementById('cart-items');
-const cartCount = document.getElementById('cart-count');
-const cartTotal = document.getElementById('cart-total');
-const checkoutBtn = document.getElementById('checkout-btn');
+    // Using CoinGecko Free API to pull actual live tech currency trends
+    const API_URL = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,solana,cardano&order=market_cap_desc';
 
-// Open/Close Drawer Logic
-cartToggle.addEventListener('click', () => {
-    cartDrawer.classList.add('open');
-    cartOverlay.classList.add('show');
-});
+    async function fetchMarketData() {
+        // Toggle interface elements to show connection status
+        loader.style.display = 'block';
+        errorBox.style.display = 'none';
+        dataGrid.innerHTML = '';
 
-const closeDrawer = () => {
-    cartDrawer.classList.remove('open');
-    cartOverlay.classList.remove('show');
-};
+        try {
+            const response = await fetch(API_URL);
+            
+            if (!response.ok) {
+                throw new Error('Network error received.');
+            }
 
-cartClose.addEventListener('click', closeDrawer);
-cartOverlay.addEventListener('click', closeDrawer);
-
-// Add to Cart Logic
-addToCartButtons.forEach(button => {
-    button.addEventListener('click', (e) => {
-        const card = e.target.closest('.product-card');
-        const id = card.dataset.id;
-        const name = card.dataset.name;
-        const price = parseInt(card.dataset.price);
-
-        // Check if item is already inside cart array
-        if (!cart.some(item => item.id === id)) {
-            cart.push({ id, name, price });
-            updateCartUI();
+            const data = await response.json();
+            renderGrid(data);
+        } catch (error) {
+            console.error('API Pull Interrupted: ', error);
+            errorBox.style.display = 'block';
+        } finally {
+            loader.style.display = 'none';
         }
-        
-        // Auto open drawer to show action item added
-        cartDrawer.classList.add('open');
-        cartOverlay.classList.add('show');
-    });
-});
-
-// Remove Item Logic
-function removeItem(id) {
-    cart = cart.filter(item => item.id !== id);
-    updateCartUI();
-}
-
-// Global UI Rendering Refresh
-function updateCartUI() {
-    cartCount.innerText = cart.length;
-    
-    if (cart.length === 0) {
-        cartItemsContainer.innerHTML = '<p class="empty-msg">Your cart is empty.</p>';
-        cartTotal.innerText = '$0';
-        return;
     }
 
-    cartItemsContainer.innerHTML = '';
-    let total = 0;
+    // Function loop map to cleanly push components onto user display screens
+    function renderGrid(assets) {
+        assets.forEach(asset => {
+            const isPositive = asset.price_change_percentage_24h >= 0;
+            const changeClass = isPositive ? 'positive' : 'negative';
+            const changeSign = isPositive ? '+' : '';
 
-    cart.forEach(item => {
-        total += item.price;
-        const itemElement = document.createElement('div');
-        itemElement.classList.add('cart-item');
-        itemElement.innerHTML = `
-            <div class="item-info">
-                <h4>${item.name}</h4>
-                <span>$${item.price}</span>
-            </div>
-            <button class="remove-btn" onclick="removeItem('${item.id}')">Remove</button>
-        `;
-        cartItemsContainer.appendChild(itemElement);
-    });
-
-    cartTotal.innerText = `$${total}`;
-}
-
-// Simulated Check-out
-checkoutBtn.addEventListener('click', () => {
-    if(cart.length > 0) {
-        alert("Thank you! This simulated checkout checkout is complete.");
-        cart = [];
-        updateCartUI();
-        closeDrawer();
+            const card = document.createElement('div');
+            card.className = 'data-card';
+            card.innerHTML = `
+                <div class="card-top">
+                    <span class="asset-name">${asset.name}</span>
+                    <span class="asset-symbol">${asset.symbol.toUpperCase()}</span>
+                </div>
+                <div class="asset-price">$${asset.current_price.toLocaleString()}</div>
+                <div class="card-stats">
+                    <span>24h Change:</span>
+                    <span class="pct-change ${changeClass}">${changeSign}${asset.price_change_percentage_24h.toFixed(2)}%</span>
+                </div>
+            `;
+            dataGrid.appendChild(card);
+        });
     }
+
+    // Assign interactive refresh actions
+    refreshBtn.addEventListener('click', fetchMarketData);
+
+    // Initial boot sequence call execution
+    fetchMarketData();
 });
